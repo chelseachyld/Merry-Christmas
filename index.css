@@ -1,9 +1,7 @@
-/* Tailwind CSS 基础引入 */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* 页面全局样式 */
 html, body, #root {
   width: 100%;
   height: 100%;
@@ -19,7 +17,6 @@ h1, h2, .font-serif {
   font-family: 'Cormorant Garamond', serif;
 }
 
-/* Canvas 占满屏幕 */
 canvas {
   display: block !important;
   width: 100% !important;
@@ -27,7 +24,6 @@ canvas {
   touch-action: none;
 }
 
-/* 手势视频窗口 */
 #gesture-video {
   position: fixed;
   bottom: 20px;
