@@ -1,4 +1,3 @@
-
 import React, { Suspense, useState, useCallback, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Environment, ContactShadows } from '@react-three/drei';
@@ -12,13 +11,13 @@ const App: React.FC = () => {
   const [handOffset, setHandOffset] = useState({ x: 0, y: 0 });
   const controlsRef = useRef<any>(null);
 
+  // 手势开闭手掌触发树状态
   const onGesture = useCallback((isOpen: boolean) => {
-    // Open palm = Unleash (Chaos), Closed fist = Reassemble (Tree)
     setTreeState(isOpen ? TreeState.SCATTERED : TreeState.TREE_SHAPE);
   }, []);
 
-  const onMove = useCallback((pos: { x: number, y: number }) => {
-    // Mirror movement to adjust camera slightly
+  // 手移动触发摄像机偏移
+  const onMove = useCallback((pos: { x: number; y: number }) => {
     setHandOffset({ x: pos.x * 5, y: -pos.y * 3 });
   }, []);
 
@@ -43,7 +42,7 @@ const App: React.FC = () => {
 
         <Suspense fallback={null}>
           <Environment preset="night" blur={0.8} />
-          
+
           <group position={[0, -2.5, 0]}>
             <Tree state={treeState} />
           </group>
@@ -61,7 +60,7 @@ const App: React.FC = () => {
           <ambientLight intensity={0.6} />
           <spotLight position={[25, 30, 20]} angle={0.3} penumbra={1} intensity={5} color="#D4AF37" />
           <pointLight position={[-20, 15, 10]} intensity={3} color="#991b1b" />
-          
+
           <PostProcessing />
         </Suspense>
       </Canvas>
@@ -73,6 +72,7 @@ const App: React.FC = () => {
         treeState={treeState}
       />
 
+      {/* 渐变叠加效果 */}
       <div className="fixed inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80 pointer-events-none" />
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(0,0,0,0.9)_100%)] pointer-events-none" />
     </div>
@@ -80,3 +80,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+
