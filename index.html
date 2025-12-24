@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Arix Signature Tree</title>
-  
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   
@@ -13,15 +12,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@200;300;400&display=swap" rel="stylesheet">
-  
-  <!-- Mediapipe Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
 
   <style>
-    :root {
-      background-color: #010805;
-    }
     html, body, #root {
       width: 100%;
       height: 100%;
@@ -29,8 +21,8 @@
       padding: 0;
       overflow: hidden;
       background-color: #010805;
-      color: #e2e8f0;
       font-family: 'Montserrat', sans-serif;
+      color: #e2e8f0;
     }
     h1, h2, .font-serif {
       font-family: 'Cormorant Garamond', serif;
@@ -67,7 +59,7 @@
   <div id="root"></div>
   <video id="gesture-video" autoplay playsinline></video>
 
-  <!-- React + Three.js + R3F + ReactDOM -->
+  <!-- React + Three.js + R3F + Mediapipe (全部通过 CDN) -->
   <script type="module">
     import React from "https://esm.sh/react@18.2.0";
     import { createRoot } from "https://esm.sh/react-dom@18.2.0/client";
@@ -76,17 +68,14 @@
     import { Hands } from "https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js";
     import { Camera } from "https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js";
 
-    // ===== 手势控制的树组件 =====
     function Tree({ handData }) {
       const meshRef = React.useRef(null);
-
       useFrame(() => {
         if (meshRef.current && handData) {
           meshRef.current.rotation.y += 0.01;
-          meshRef.current.position.y = handData.y / 300; // 缩放手势高度
+          meshRef.current.position.y = handData.y / 300;
         }
       });
-
       return (
         <mesh ref={meshRef} position={[0, 0, 0]}>
           <cylinderGeometry args={[0.2, 0.5, 2, 16]} />
@@ -95,28 +84,23 @@
       );
     }
 
-    // ===== Mediapipe 手势 Hook =====
     function useHands() {
       const [handData, setHandData] = React.useState(null);
-
       React.useEffect(() => {
         const videoElement = document.getElementById("gesture-video");
-
         const hands = new Hands({
           locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
         });
-
         hands.setOptions({
           maxNumHands: 1,
           modelComplexity: 1,
           minDetectionConfidence: 0.7,
           minTrackingConfidence: 0.7,
         });
-
         hands.onResults((results) => {
           if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-            const indexFingerTip = results.multiHandLandmarks[0][8];
-            setHandData({ x: indexFingerTip.x, y: indexFingerTip.y });
+            const indexTip = results.multiHandLandmarks[0][8];
+            setHandData({ x: indexTip.x, y: indexTip.y });
           }
         });
 
@@ -127,17 +111,13 @@
         });
         camera.start();
         videoElement.style.display = "block";
-
         return () => camera.stop();
       }, []);
-
       return handData;
     }
 
-    // ===== 主应用 =====
     function App() {
       const handData = useHands();
-
       return (
         <Canvas
           style={{ width: "100vw", height: "100vh", background: "#010805" }}
@@ -150,9 +130,9 @@
       );
     }
 
-    // ===== 渲染 =====
     const root = createRoot(document.getElementById("root"));
     root.render(<App />);
   </script>
 </body>
 </html>
+
